@@ -1,27 +1,32 @@
 #!/bin/sh
 
-log=/usr/local/var/www/log.txt
-
-cd ~/AmplissimusApp
-
-while true ; do
+dir() {
+    cd $1
     git remote update
     LOCAL=$(git rev-parse @)
     REMOTE=$(git rev-parse '@{u}')
     BASE=$(git merge-base @ '@{u}')
-    date=$(date -R)
     if [ $LOCAL = $REMOTE ]; then
-        echo "$date Sleeping for 1 min"
-        sleep 60
+        echo "Sleeping for 100 secs"
+        sleep 100
     elif [ $LOCAL = $BASE ]; then
         git pull
-        echo "$date starting build"
+        echo "starting build"
         sh ci.sh
         echo "build finished"
     elif [ $REMOTE = $BASE ]; then
-        echo "$date Warning: You have local changes."
+        echo "Warning: You have local changes."
     else
-        echo "$date Error: Your clone is broken."
+        echo "Error: Your clone is broken."
         exit 1
     fi
-done | tee -a $log
+}
+
+while true ; do
+    for proj in AmplissimusApp Artillar ; do
+        dir ~/$proj | while : ; do
+            read line
+            echo "$(date '+%d.%m.%Y %H:%M:%S') [$proj] $line"
+        done
+    done
+done | tee -a /usr/local/var/www/log.txt
