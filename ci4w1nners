@@ -1,0 +1,20 @@
+#!/bin/sh
+
+log=/usr/local/var/www/log.txt
+
+cd ~/AmplissimusApp
+
+while true ; do
+    LOCAL=$(git rev-parse @)
+    REMOTE=$(git rev-parse '@{u}')
+    BASE=$(git merge-base @ '@{u}')
+    if [ $LOCAL = $BASE ]; then
+        git pull
+        ./ci.sh >> $log
+    elif [ $REMOTE = $BASE ]; then
+        echo "Warning: You have local changes." >> $log
+    elif [ $LOCAL = $REMOTE ]; then
+        echo "Error: Your clone is broken." >> $log
+        exit 1
+    fi
+done

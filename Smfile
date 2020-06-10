@@ -1,0 +1,5 @@
+install root
+{
+        !cp -f ci4w1nners /usr/local/bin/ci4w1nners
+        !cp -f de.chrissx.ci4w1nners.plist /Library/LaunchDaemons/
+}
