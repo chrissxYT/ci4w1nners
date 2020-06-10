@@ -8,12 +8,14 @@ while true ; do
     LOCAL=$(git rev-parse @)
     REMOTE=$(git rev-parse '@{u}')
     BASE=$(git merge-base @ '@{u}')
-    if [ $LOCAL = $BASE ]; then
+    if [ $LOCAL = $REMOTE ]; then
+        sleep 1m
+    elif [ $LOCAL = $BASE ]; then
         git pull
         ./ci.sh >> $log
     elif [ $REMOTE = $BASE ]; then
         echo "Warning: You have local changes." >> $log
-    elif [ $LOCAL = $REMOTE ]; then
+    else
         echo "Error: Your clone is broken." >> $log
         exit 1
     fi
