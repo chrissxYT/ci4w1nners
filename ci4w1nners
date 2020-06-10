@@ -5,18 +5,23 @@ log=/usr/local/var/www/log.txt
 cd ~/AmplissimusApp
 
 while true ; do
+    git remote update
     LOCAL=$(git rev-parse @)
     REMOTE=$(git rev-parse '@{u}')
     BASE=$(git merge-base @ '@{u}')
+    date=$(date -R)
     if [ $LOCAL = $REMOTE ]; then
-        sleep 1m
+        echo "$date Sleeping for 1 min"
+        sleep 60
     elif [ $LOCAL = $BASE ]; then
         git pull
-        ./ci.sh >> $log
+        echo "$date starting build"
+        sh ci.sh
+        echo "build finished"
     elif [ $REMOTE = $BASE ]; then
-        echo "Warning: You have local changes." >> $log
+        echo "$date Warning: You have local changes."
     else
-        echo "Error: Your clone is broken." >> $log
+        echo "$date Error: Your clone is broken."
         exit 1
     fi
-done
+done | tee -a $log
