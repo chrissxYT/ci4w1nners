@@ -11,7 +11,7 @@ compressloginbackground() {
 }
 
 dir() {
-    echo BZUM BZUM BREKE KEKE
+    echo starting with $1
     cd $1
     git remote update
     LOCAL=$(git rev-parse @)
@@ -31,14 +31,13 @@ dir() {
         echo "Error: Your local repo is broken."
         exit 1
     fi
+    echo so done with $1
 }
 
 compressloginbackground &
 
 while true ; do
     for proj in AmplissimusApp Artillar ; do
-            echo proj start $proj
-            dir ~/$proj 2>&1
-            echo proj end $proj
+            dir ~/$proj 2>&1 | tee -a /usr/local/var/www/log.txt
     done
-done | tee -a /usr/local/var/www/log.txt
+done
