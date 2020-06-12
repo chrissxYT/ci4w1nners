@@ -1,15 +1,5 @@
 #!/bin/sh
 
-compressloginbackground() {
-    while true ; do
-        while [ ! -f /usr/local/var/www/log.txt ] ; do sleep 3 ; done
-        fn=/usr/local/var/www/log_$(date +%s).txt
-        mv -f /usr/local/var/www/log.txt $fn
-        gzip -9 $fn
-        sleep 10000
-    done
-}
-
 dir() {
     echo starting with $1
     cd $1
@@ -34,10 +24,17 @@ dir() {
     echo so done with $1
 }
 
-compressloginbackground &
+I=0
 
 while true ; do
     for proj in AmplissimusApp Artillar ; do
+            I=$(($I + 1))
             dir ~/$proj 2>&1 | tee -a /usr/local/var/www/log.txt
+            if [ $I -gt 10 ] ; then
+                    I=0
+                    fn=/usr/local/var/www/log_$(date +%Y_%m_%d-%H_%M_%S).txt
+                    mv -f /usr/local/var/www/log.txt $fn
+                    xz -9 $fn
+            fi
     done
 done
