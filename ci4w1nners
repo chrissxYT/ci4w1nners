@@ -1,6 +1,17 @@
 #!/bin/sh
 
+compressloginbackground() {
+    while true ; do
+        while [ ! -f /usr/local/var/www/log.txt ] ; do sleep 3 ; done
+        fn=/usr/local/var/www/log_$(date +%s).txt
+        mv -f /usr/local/var/www/log.txt $fn
+        gzip -9 $fn
+        sleep 10000
+    done
+}
+
 dir() {
+    echo BZUM BZUM BREKE KEKE
     cd $1
     git remote update
     LOCAL=$(git rev-parse @)
@@ -17,16 +28,17 @@ dir() {
     elif [ $REMOTE = $BASE ]; then
         echo "Warning: You have local changes."
     else
-        echo "Error: Your clone is broken."
+        echo "Error: Your local repo is broken."
         exit 1
     fi
 }
 
+compressloginbackground &
+
 while true ; do
     for proj in AmplissimusApp Artillar ; do
-        dir ~/$proj | while : ; do
-            read line
-            echo "$(date '+%d.%m.%Y %H:%M:%S') [$proj] $line"
-        done
+            echo proj start $proj
+            dir ~/$proj 2>&1
+            echo proj end $proj
     done
 done | tee -a /usr/local/var/www/log.txt
