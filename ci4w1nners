@@ -1,5 +1,9 @@
 #!/bin/sh
 
+d() {
+    date +%Y_%m_%d-%H_%M_%S
+}
+
 dir() {
     echo starting with $1
     ping -c 1 1.1.1.1 || { echo "no internet" ; sleep 10 ; return 1 ; }
@@ -14,7 +18,7 @@ dir() {
     elif [ $LOCAL = $BASE ]; then
         git pull
         echo "starting build"
-        sh ci.sh $REMOTE
+        sh ci.sh $(d)_$REMOTE
         echo "build finished"
     elif [ $REMOTE = $BASE ]; then
         echo "Warning: You have local changes."
@@ -33,7 +37,7 @@ while true ; do
             dir ~/$proj 2>&1 | tee -a /usr/local/var/www/log.txt
             if [ $I -gt 20 ] ; then
                     I=0
-                    fn=/usr/local/var/www/log_$(date +%Y_%m_%d-%H_%M_%S).txt
+                    fn=/usr/local/var/www/log_$(d).txt
                     mv -f /usr/local/var/www/log.txt $fn
                     xz -9 $fn
             fi
