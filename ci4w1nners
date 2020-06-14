@@ -2,6 +2,7 @@
 
 dir() {
     echo starting with $1
+    ping -c 1 1.1.1.1 || { echo "no internet" ; sleep 10 ; return 1 ; }
     cd $1
     git remote update
     LOCAL=$(git rev-parse @)
@@ -13,7 +14,7 @@ dir() {
     elif [ $LOCAL = $BASE ]; then
         git pull
         echo "starting build"
-        sh ci.sh
+        sh ci.sh $REMOTE
         echo "build finished"
     elif [ $REMOTE = $BASE ]; then
         echo "Warning: You have local changes."
@@ -30,7 +31,7 @@ while true ; do
     for proj in AmplissimusApp Artillar ; do
             I=$(($I + 1))
             dir ~/$proj 2>&1 | tee -a /usr/local/var/www/log.txt
-            if [ $I -gt 10 ] ; then
+            if [ $I -gt 20 ] ; then
                     I=0
                     fn=/usr/local/var/www/log_$(date +%Y_%m_%d-%H_%M_%S).txt
                     mv -f /usr/local/var/www/log.txt $fn
