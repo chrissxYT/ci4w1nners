@@ -6,7 +6,6 @@ d() {
 
 dir() {
     echo starting with $1
-    ping -c 1 1.1.1.1 || { echo "no internet" ; sleep 10 ; return 1 ; }
     cd $1
     git remote update
     LOCAL=$(git rev-parse @)
@@ -26,20 +25,21 @@ dir() {
         echo "Error: Your local repo is broken."
         exit 1
     fi
-    echo so done with $1
+    echo done with f_cking $1
 }
 
 I=0
 
 while true ; do
+    ping -c 1 1.1.1.1 || { echo "[ERROR] NO INTERNET" ; sleep 30 ; continue ; }
     for proj in AmplissimusApp Artillar ; do
-            I=$(($I + 1))
-            dir ~/$proj 2>&1 | tee -a /usr/local/var/www/log.txt
-            if [ $I -gt 20 ] ; then
-                    I=0
-                    fn=/usr/local/var/www/log_$(d).txt
-                    mv -f /usr/local/var/www/log.txt $fn
-                    xz -9 $fn
-            fi
+        I=$(($I + 1))
+        dir ~/$proj 2>&1 | tee -a /usr/local/var/www/log.txt
     done
+    if [ $I -gt 20 ] ; then
+        I=0
+        fn=/usr/local/var/www/log_$(d).txt
+        mv -f /usr/local/var/www/log.txt $fn
+        xz -9 $fn
+    fi
 done
