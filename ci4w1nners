@@ -17,7 +17,7 @@ dir() {
     elif [ $LOCAL = $BASE ]; then
         git pull
         echo "starting build"
-        sh ci.sh $(d)_$REMOTE
+        sh ci.sh $(d)_$REMOTE $REMOTE
         echo "build finished"
     elif [ $REMOTE = $BASE ]; then
         echo "Warning: You have local changes."
@@ -32,11 +32,11 @@ I=0
 
 while true ; do
     ping -c 1 1.1.1.1 || { echo "[ERROR] NO INTERNET" ; sleep 30 ; continue ; }
-    for proj in AmplissimusApp Artillar ; do
+    for projdir in $(cat /etc/dirs.ci4w1nners) ; do
         I=$(($I + 1))
-        dir ~/$proj 2>&1 | tee -a /usr/local/var/www/log.txt
+        dir $projdir 2>&1 | tee -a /usr/local/var/www/log.txt
     done
-    if [ $I -gt 20 ] ; then
+    if [ $I -gt 50 ] ; then
         I=0
         fn=/usr/local/var/www/log_$(d).txt
         mv -f /usr/local/var/www/log.txt $fn
