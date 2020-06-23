@@ -13,7 +13,7 @@ dir() {
     BASE=$(git merge-base @ '@{u}')
     if [ $LOCAL = $REMOTE ]; then
         echo "Sleeping for 100 secs"
-        sleep 100
+        sleep 120
     elif [ $LOCAL = $BASE ]; then
         git pull
         echo "starting build"
@@ -25,6 +25,7 @@ dir() {
         echo "Error: Your local repo is broken."
         exit 1
     fi
+    [ -f ci_periodically.sh ] && sh ci_periodically.sh
     echo "done with f_cking $1 ($(d))"
 }
 
