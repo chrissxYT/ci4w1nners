@@ -12,7 +12,7 @@ dir() {
     REMOTE=$(git rev-parse '@{u}')
     BASE=$(git merge-base @ '@{u}')
     if [ $LOCAL = $REMOTE ]; then
-        echo "Sleeping for 100 secs"
+        echo "Sleeping for 120 secs"
         sleep 120
     elif [ $LOCAL = $BASE ]; then
         git pull
@@ -32,7 +32,11 @@ dir() {
 I=0
 
 while true ; do
-    ping -c 1 1.1.1.1 || { echo "[ERROR] NO INTERNET" ; sleep 30 ; continue ; }
+    ping -c 1 1.1.1.1 || {
+        echo "[ERROR] NO INTERNET"
+        sleep 30
+        continue
+    } | tee -a /usr/local/var/www/log.txt
     for projdir in $(cat /etc/dirs.ci4w1nners) ; do
         I=$(($I + 1))
         dir $projdir 2>&1 | tee -a /usr/local/var/www/log.txt
